@@ -84,8 +84,11 @@ load_addr_data(){
 
 send_to_mult_addr(){
    load_addr_data
-   val1=$(echo "$(bitcoin-cli -testnet getreceivedbyaddress "$recv_addr" 1)/$num_addr" | bc -l)
-   printf 'Value to send: %0.8f BTC\n' "$val1"
+   #val1=$(echo "$(bitcoin-cli -testnet getbalance "*" 1)/$num_addr" | bc -l)
+
+   val=$(printf "%.9f" $(echo $(bitcoin-cli -testnet getbalance) / "$num_addr" | bc -l))
+
+   printf 'Value to send: %0.8f BTC\n' "$val"
    while true
    do
        echo "Confirm with YES or cancel with NO (caps matter)"
@@ -98,9 +101,9 @@ send_to_mult_addr(){
                      ((count++))
                      com_params+="\\\"$i\\\""
                      if [ "$count" -lt "$num_addr" ]; then
-                        com_params+=":$val1,"
+                        com_params+=":$val,"
                      else
-                        com_params+=":$val1"
+                        com_params+=":$val"
                      fi
                   done
                   com_params+="}\" 6 \"Periodic payments\" \"["
@@ -116,8 +119,9 @@ send_to_mult_addr(){
                      fi
                      done
                      com_params+=" true 6 CONSERVATIVE"
-                     echo bitcoin-cli -testnet sendmany "$com_params"
-                     printf '%s\n' "$1"
+                     #echo "bitcoin-cli -testnet sendmany "$com_params""
+                     bitcoin-cli -testnet sendmany "$com_params"
+                     printf 'TxID: %s\n' "$?"
                      return 1
                      ;;
            "NO") echo "Action cancelled!"
@@ -128,4 +132,5 @@ send_to_mult_addr(){
 }
 
 recv_addr="tb1q9hljet6r5kqeng8ywq9akgxcxrqt7rf8zz4vxp"
+LC_NUMERIC=C
 main_menu

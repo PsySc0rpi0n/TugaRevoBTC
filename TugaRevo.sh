@@ -79,7 +79,6 @@ load_addr_data(){
    fi
    num_addr=$(wc -l < "$addr_fp")
    readarray -t addr_arr < "$addr_fp"
-   #((i++))
    echo -e "$num_addr addresses loaded sucessefuly\n"
 }
 
