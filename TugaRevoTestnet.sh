@@ -84,7 +84,6 @@ load_addr_data(){
 
 send_to_mult_addr(){
    load_addr_data
-   #val1=$(echo "$(bitcoin-cli -testnet getbalance "*" 1)/$num_addr" | bc -l)
 
    val=$(printf "%.9f" $(echo $(bitcoin-cli -testnet getbalance) / "$num_addr" | bc -l))
 
@@ -120,7 +119,7 @@ send_to_mult_addr(){
                      done
                      com_params+=" true 6 CONSERVATIVE"
                      #echo "bitcoin-cli -testnet sendmany "$com_params""
-                     bitcoin-cli -testnet sendmany "$com_params"
+                     bitcoin-cli -testnet sendmany $com_params
                      printf 'TxID: %s\n' "$?"
                      return 1
                      ;;
