@@ -5,7 +5,7 @@ trap '' 2 # ignore ctrl+c
 main_menu() {
    while true
       do
-         clear # Clear screen for each loop of menu
+         #clear # Clear screen for each loop of menu
          echo "============="
          echo "Menu --- Testnet"
          echo "============="
@@ -20,7 +20,8 @@ main_menu() {
          case "$answer" in
             1) send_single_BTC "$address"
                ;;
-            2) send_to_mult_addr
+            2) send_many
+               #send_to_mult_addr
                ;;
             3) check_balance
                ;;
@@ -82,54 +83,85 @@ load_addr_data(){
    echo -e "$num_addr addresses loaded sucessefuly\n"
 }
 
-send_to_mult_addr(){
-   load_addr_data
+#send_to_mult_addr(){
+#   load_addr_data
+#
+#   val=$(printf "%.9f" $(echo $(bitcoin-cli -testnet getbalance) / "$num_addr" | bc -l))
+#
+#   printf 'Value to send: %0.8f BTC\n' "$val"
+#   while true
+#   do
+#       echo "Confirm with YES or cancel with NO (caps matter)"
+#       read -r -p '> ' opt
+#       case $opt in
+#           "YES") count=0
+#                  com_params="\"\" \"{"
+#                  for i in "${addr_arr[@]}"
+#                  do
+#                     ((count++))
+#                     com_params+="\\\"$i\\\""
+#                     if [ "$count" -lt "$num_addr" ]; then
+#                        com_params+=":$val,"
+#                     else
+#                        com_params+=":$val"
+#                     fi
+#                  done
+#                  com_params+="}\" 6 \"Periodic payments\" \"["
+#
+#                  count=0
+#                  for i in "${addr_arr[@]}"
+#                  do
+#                     ((count++))
+#                     if [ "$count" -lt "$num_addr" ]; then
+#                        com_params+="\\\"$i\\\","
+#                     else
+#                        com_params+="\\\"$i\\\"]\""
+#                     fi
+#                     done
+#                     com_params+=" true 6 CONSERVATIVE"
+#                     #echo "bitcoin-cli -testnet sendmany "$com_params""
+#                     #bitcoin-cli -testnet sendmany $com_params
+#                     echo $com_params > addrlst.dat
+#                     printf 'TxID: %s\n' "$?"
+#                     return 1
+#                     ;;
+#           "NO") echo "Action cancelled!"
+#                 return 2
+#                 ;;
+#       esac
+#   done
+#}
 
-   val=$(printf "%.9f" $(echo $(bitcoin-cli -testnet getbalance) / "$num_addr" | bc -l))
+send_many(){
+  load_addr_data
+  count=0
+  backcptb='""'
+  min_conf=6
+  comm1="Periodic payments"
+  replcbl=true
+  conf_targ=6
+  est_mde=CONSERVATIVE
 
-   printf 'Value to send: %0.8f BTC\n' "$val"
-   while true
-   do
-       echo "Confirm with YES or cancel with NO (caps matter)"
-       read -r -p '> ' opt
-       case $opt in
-           "YES") count=0
-                  com_params="\"\" \"{"
-                  for i in "${addr_arr[@]}"
-                  do
-                     ((count++))
-                     com_params+="\\\"$i\\\""
-                     if [ "$count" -lt "$num_addr" ]; then
-                        com_params+=":$val,"
-                     else
-                        com_params+=":$val"
-                     fi
-                  done
-                  com_params+="}\" 6 \"Periodic payments\" \"["
+  val=$(printf "%.9f" $(echo $(bitcoin-cli -testnet getbalance) / "$num_addr" | bc -l))
+  printf "Value to send: %.8f BTC\n" "$val"
 
-                  count=0
-                  for i in "${addr_arr[@]}"
-                  do
-                     ((count++))
-                     if [ "$count" -lt "$num_addr" ]; then
-                        com_params+="\\\"$i\\\","
-                     else
-                        com_params+="\\\"$i\\\"]\""
-                     fi
-                     done
-                     com_params+=" true 6 CONSERVATIVE"
-                     #echo "bitcoin-cli -testnet sendmany "$com_params""
-                     bitcoin-cli -testnet sendmany $com_params
-                     printf 'TxID: %s\n' "$?"
-                     return 1
-                     ;;
-           "NO") echo "Action cancelled!"
-                 return 2
-                 ;;
-       esac
-   done
+  obj_init="\""
+  json_obj='{'
+  for i in "${addr_arr[@]}"
+  do
+    ((count++))
+    json_obj+="\"$i\""
+    json_obj+=":"
+    if [ "$count" -lt "$num_addr" ]; then
+      json_obj+="$val,"
+    else
+      json_obj+="$val}"
+    fi
+  done
+  obj_end+='"'
+  json_final=$(echo $json_obj | jq '.')
+  printf "bitcoin-cli -testnet sendmany  %s %s%s%s %d %s\n" "$backcptb" "$obj_init" "$json_final" "$obj_end" $min_conf "$comm1"
 }
 
-recv_addr="tb1q9hljet6r5kqeng8ywq9akgxcxrqt7rf8zz4vxp"
 LC_NUMERIC=C
 main_menu
