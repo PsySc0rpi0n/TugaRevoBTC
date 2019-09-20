@@ -83,48 +83,33 @@ load_addr_data(){
    echo -e "$num_addr addresses loaded sucessefuly\n"
 }
 
-send_many(){
-  load_addr_data
-  count=0
-  backcptb='""'
-  min_conf=6
-  comm1="Periodic payments"
-  replcbl=true
-  conf_targ=6
-  est_mde=CONSERVATIVE
-
-  val=$(printf "%.9f" $(echo $(bitcoin-cli -testnet getbalance) / "$num_addr" | bc -l))
-  printf "Value to send: %.8f BTC\n" "$val"
-  while true
+mk_json_obj(){
+  local_pairs=""
+  for((i = 1; i<=$#; i+=2))
   do
-    echo "Confirm with YES or cancel with NO (caps matter)"
-    read -r -p '> ' opt
-    case $opt in
-      "YES")
-            obj_init="\""
-            json_obj='{'
-            for i in "${addr_arr[@]}"
-            do
-              ((count++))
-              json_obj+="\"$i\""
-              json_obj+=":"
-              if [ "$count" -lt "$num_addr" ]; then
-                json_obj+="$val,"
-              else
-                json_obj+="$val}"
-              fi
-            done
-            obj_end+='"'
-            json_final=$(echo $json_obj | jq '.')
-            printf "bitcoin-cli -testnet sendmany  %s %s%s%s %d %s\n" "$backcptb" "$obj_init" "$json_final" "$obj_end" $min_conf "$comm1"
-            return 1
-            ;;
-      "NO") echo "Action cancelled!"
-            return 2
-            ;;
-    esac
+    [ -z "$pairs" ] || pairs+=","
+    pairs+="$(eval echo \'\"\'$$i\'\"\': \'\"\'\$$(($i + 1))\'\"\')"
   done
+  echo "{ $pairs }"
 }
 
+mk_json_object_one_val(){
+
+  local args=""
+  #local val="$1"
+  val=$(printf "%.9f" $(echo $(bitcoin-cli -testnet getbalance) / "$num_addr" | bc -l))
+  shift
+  for key in "$@"
+  do
+    args+="$key $val "
+  done
+  mk_json_obj $args
+}
+
+send_many(){
+  json_obj="$(mk_json_object_one_val "$val" "${addr_arr[@]}")"
+  echo "Here"
+  echo "$json_obj"
+}
 LC_NUMERIC=C
 main_menu
