@@ -88,12 +88,13 @@ mk_json_obj(){
   for((i = 1; i<=$#; i+=2))
   do
     [ -z "$pairs" ] || pairs+=","
-    pairs+="$(eval echo \'\"\'$$i\'\"\': \'\"\'\$$(($i + 1))\'\"\')"
+    pairs+="$(eval echo \'\"\'\$$i\'\"\': \'\"\'\$$(($i + 1))\'\"\')"
   done
   echo "{ $pairs }"
 }
 
 mk_json_object_one_val(){
+  echo "Here"
 
   local args=""
   #local val="$1"
@@ -107,8 +108,7 @@ mk_json_object_one_val(){
 }
 
 send_many(){
-  json_obj="$(mk_json_object_one_val "$val" "${addr_arr[@]}")"
-  echo "Here"
+  json_obj=$(mk_json_object_one_val "$val" "${addr_arr[@]}")
   echo "$json_obj"
 }
 LC_NUMERIC=C
