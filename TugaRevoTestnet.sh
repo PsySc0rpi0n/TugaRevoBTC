@@ -109,7 +109,6 @@ mk_json_object_one_val(){
 
 send_many(){
   mk_json_object_one_val "$val" "${addr_arr[@]}"
-  echo "$json_obj"
 }
 LC_NUMERIC=C
 main_menu
