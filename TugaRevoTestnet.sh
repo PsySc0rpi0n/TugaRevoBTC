@@ -88,16 +88,23 @@ mk_json_obj(){
   for((i = 1; i<=$#; i+=2))
   do
     [ -z "$pairs" ] || pairs+=","
-    pairs+="$(eval echo \'\"\'\$$i\'\"\': \'\"\'\$$(($i + 1))\'\"\')"
+    pairs+="$(eval echo \'\"\'\$$i\'\"\': \$$(($i + 1)))"
   done
-  echo "{ $pairs }"
+  echo "{$pairs}"
+}
+
+mk_json_lst(){
+  local items=""
+  for((i = 1; i <= ${#addr_arr[@]}; i++))
+  do
+    [ -z "$items" ] || items+=","
+    items+="$(eval echo \'\"\'\$$i\'\"\')"
+  done
+  echo "[$items]"
 }
 
 mk_json_object_one_val(){
-  echo "Here"
-
   local args=""
-  #local val="$1"
   val=$(printf "%.9f" $(echo $(bitcoin-cli -testnet getbalance) / "$num_addr" | bc -l))
   shift
   for key in "$@"
@@ -107,8 +114,22 @@ mk_json_object_one_val(){
   mk_json_obj $args
 }
 
-send_many(){
-  mk_json_object_one_val "$val" "${addr_arr[@]}"
+mk_json_lst_one_val(){
+  local args=""
+  shift
+  for key in "$@"
+  do
+    args+="$key"
+  done
+  echo "args is: $args"
+  mk_json_lst $args
 }
+
+send_many(){
+  load_addr_data
+  mk_json_object_one_val "$val" "${addr_arr[@]}"
+  mk_json_lst_one_val "${addr_arr[@]}"
+}
+
 LC_NUMERIC=C
 main_menu
