@@ -84,23 +84,23 @@ load_addr_data(){
 }
 
 mk_json_obj(){
-  local_pairs=""
+  pairs=""
   for((i = 1; i<=$#; i+=2))
   do
     [ -z "$pairs" ] || pairs+=","
-    pairs+="$(eval echo \'\"\'\$$i\'\"\': \$$(($i + 1)))"
+    pairs+="$(eval echo \'\"\'\$$i\'\"\':\'\"\'\$$(($i + 1))\'\"\')"
   done
-  echo "{$pairs}"
+  echo "{$pairs}" | jq '.'
 }
 
 mk_json_lst(){
-  local items=""
-  for((i = 1; i <= ${#addr_arr[@]}; i++))
+  items=""
+  for(( i = 1; i <= ${#addr_arr[@]}; i++))
   do
     [ -z "$items" ] || items+=","
-    items+="$(eval echo \'\"\'\$$i\'\"\')"
+    items+="$(eval echo \'\"\'${addr_arr[$i-1]}\'\"\')"
   done
-  echo "[$items]"
+  echo "[$items]" | jq '.'
 }
 
 mk_json_object_one_val(){
@@ -116,12 +116,10 @@ mk_json_object_one_val(){
 
 mk_json_lst_one_val(){
   local args=""
-  shift
-  for key in "$@"
+  for lst in "$@"
   do
-    args+="$key"
+    args+="$lst "
   done
-  echo "args is: $args"
   mk_json_lst $args
 }
 
@@ -129,6 +127,8 @@ send_many(){
   load_addr_data
   mk_json_object_one_val "$val" "${addr_arr[@]}"
   mk_json_lst_one_val "${addr_arr[@]}"
+  bitcoin-cli -testnet sendmany "" {$pairs} 6 Payments [$items] true 6 CONSERVATIVE
+  echo "TxID: $1"
 }
 
 LC_NUMERIC=C
