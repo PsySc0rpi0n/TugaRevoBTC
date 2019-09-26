@@ -51,13 +51,9 @@ send_single_BTC(){
 }
 
 check_balance(){
-   echo "Enter address to check balance:"
-   read -r -p '> ' address
-   input_type="address"
-   confirm_input "$input_type" "$address"
    echo Checking Full Node data...
-   echo Address "$address" balance is:
-   bitcoin-cli -testnet getreceivedbyaddress "$address" 1
+   echo Current wallet has:
+   bitcoin-cli -testnet getbalance
 }
 
 confirm_input(){
@@ -90,7 +86,7 @@ mk_json_obj(){
     [ -z "$pairs" ] || pairs+=","
     pairs+="$(eval echo \'\"\'\$$i\'\"\':\'\"\'\$$(($i + 1))\'\"\')"
   done
-  echo "{$pairs}" | jq '.'
+  echo "{$pairs}"
 }
 
 mk_json_lst(){
@@ -100,16 +96,24 @@ mk_json_lst(){
     [ -z "$items" ] || items+=","
     items+="$(eval echo \'\"\'${addr_arr[$i-1]}\'\"\')"
   done
-  echo "[$items]" | jq '.'
+  echo "[$items]"
+}
+
+eval_send_amount(){
+  #val=$(printf "%.8f" $(echo $(bitcoin-cli -testnet getbalance) / "$num_addr" | bc -l))
+  btc_dec=$(bitcoin-cli -testnet getbalance)
+  btc_sats=$(echo "$btc_dec * 1*10^8" | bc)
+  btc_sats_amount=$(echo "$btc_sats / $num_addr" | bc)
+  btc_amount_dec=$(printf "%.8f" $(echo "scale=8; $btc_sats_amount / (1*10^8)" | bc -l))
+  echo "$btc_amount_dec"
 }
 
 mk_json_object_one_val(){
   local args=""
-  val=$(printf "%.9f" $(echo $(bitcoin-cli -testnet getbalance) / "$num_addr" | bc -l))
   shift
   for key in "$@"
   do
-    args+="$key $val "
+    args+="$key $btc_amount_dec "
   done
   mk_json_obj $args
 }
@@ -125,7 +129,8 @@ mk_json_lst_one_val(){
 
 send_many(){
   load_addr_data
-  mk_json_object_one_val "$val" "${addr_arr[@]}"
+  eval_send_amount
+  mk_json_object_one_val "$btc_amount_dec" "${addr_arr[@]}"
   mk_json_lst_one_val "${addr_arr[@]}"
   bitcoin-cli -testnet sendmany "" {$pairs} 6 Payments [$items] true 6 CONSERVATIVE
   echo "TxID: $1"
