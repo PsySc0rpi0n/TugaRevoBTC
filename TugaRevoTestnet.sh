@@ -2,12 +2,22 @@
 
 trap '' 2 # ignore ctrl+c
 
+help_menu(){
+  echo "Usage: $0 [-testnet|-mainnet]"
+}
+
 main_menu() {
    while true
       do
-         #clear # Clear screen for each loop of menu
+         clear # Clear screen for each loop of menu
          echo "============="
-         echo "Menu --- Testnet"
+         echo "\$#: $#"
+         echo "\$1: $1"
+         if [[ "$1" -eq "-testnet" ]]; then
+           echo "Menu --- Testnet"
+         else
+           echo "Menu --- Mainnet"
+         fi
          echo "============="
          echo "[1] Send BTC to single address"
          echo "[2] Send BTC to multiple addresses"
@@ -21,7 +31,6 @@ main_menu() {
             1) send_single_BTC "$address"
                ;;
             2) send_many
-               #send_to_mult_addr
                ;;
             3) check_balance
                ;;
@@ -137,4 +146,8 @@ send_many(){
 }
 
 LC_NUMERIC=C
+if [ $# -lt 1 ]; then
+  help_menu
+  exit
+fi
 main_menu
