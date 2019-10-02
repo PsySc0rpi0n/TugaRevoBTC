@@ -109,7 +109,6 @@ mk_json_lst(){
 }
 
 eval_send_amount(){
-  #val=$(printf "%.8f" $(echo $(bitcoin-cli -testnet getbalance) / "$num_addr" | bc -l))
   btc_dec=$(bitcoin-cli -testnet getbalance)
   btc_sats=$(echo "$btc_dec * 1*10^8" | bc)
   btc_sats_amount=$(echo "$btc_sats / $num_addr" | bc)

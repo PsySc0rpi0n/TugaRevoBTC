@@ -74,7 +74,7 @@ process_menu_option(){
 confirm_input(){
   echo Please confirm "$1" "$2". Type YES to confirm:
   read -r -p'> ' input
-  if [ "$input" != "YES" ]; then
+  if [[ $input != "YES" ]]; then
 	 echo Action cancelled. "$input_type" not confirmed!
 	 exit
   fi
@@ -91,8 +91,11 @@ send_single_payment(){
   input_type="amount"
   confirm_input "$input_type" "$amount"
   echo Sending "$amount" "BTC" to "$address"
-  [ "$used_net" == "testnet" ] && bitcoin-cli -testnet sendtoaddress "$address" "$amount" false\
-							   || bitcoin-cli sendtoaddress "$address" "$amount"
+  if [[ $used_net == "testnet" ]]; then
+    bitcoin-cli -testnet sendtoaddress "$address" "$amount" false
+  else
+    bitcoin-cli sendtoaddress "$address" "$amount" false
+  fi
   echo "Transaction complete"
 }
 
@@ -101,8 +104,11 @@ check_balance(){
   echo "used_net: $used_net"
   echo Checking Full Node data...
   echo Current wallet has:
-  [ "$used_net" == "testnet" ] && bitcoin-cli -testnet getbalance\
-							   || bitcoin-cli getbalance
+  if [[ $used_net == "testnet" ]]; then
+    bitcoin-cli -testnet getbalance
+  else
+    bitcoin-cli getbalance
+  fi
 }
 
 # ====== Main script starts here ======
