@@ -11,7 +11,7 @@ main_menu() {
       do
          #clear # Clear screen for each loop of menu
          echo "============="
-         if [[ $1 == "-testnet" ]]; then
+         if [[ $1 == "-testnet" || $1 == "-t" ]]; then
            echo "Menu --- Testnet"
          else
            echo "Menu --- Mainnet"
@@ -147,4 +147,4 @@ if [ $# -lt 1 ]; then
   help_menu
   exit
 fi
-main_menu
+main_menu "$@"
