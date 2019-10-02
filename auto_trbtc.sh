@@ -16,7 +16,7 @@ process_args(){
         			  ;;
       -m|--mainnet)   used_net="mainnet"
         			  ;;
-      -a|--addr-file) if [[ ! -f "$2" ]]; then
+      -a|--addr-file) if [[ ! -f $2 ]]; then
 					    echo "File "$2" not found!"
 					  else
 						file_path="$2"
@@ -45,7 +45,7 @@ mk_json_obj(){
   pairs=""
   for((i = 1; i<=$#; i+=2))
   do
-	[ -z "$pairs" ] || pairs+=","
+	[ -z $pairs ] || pairs+=","
 	pairs+="$(eval echo \'\"\'\$$i\'\"\':\'\"\'\$$(($i + 1))\'\"\')"
   done
   #echo "{$pairs}"
