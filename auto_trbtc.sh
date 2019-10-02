@@ -48,7 +48,6 @@ mk_json_obj(){
 	[ -z $pairs ] || pairs+=","
 	pairs+="$(eval echo \'\"\'\$$i\'\"\':\'\"\'\$$(($i + 1))\'\"\')"
   done
-  #echo "{$pairs}"
 }
 
 mk_json_lst(){
@@ -58,7 +57,6 @@ mk_json_lst(){
 	[ -z "$items" ] || items+=","
 	items+="$(eval echo \'\"\'${addr_arr[$i-1]}\'\"\')"
   done
-  #echo "[$items]"
 }
 
 eval_send_amount(){
@@ -100,7 +98,6 @@ send_multiple_payment(){
   eval_send_amount
   mk_json_object_one_val "$btc_amount_dec" "${addr_arr[@]}"
   mk_json_lst_one_val "${addr_arr[@]}"
-  echo "\$used_net is: $used_net"
   if [[ "$used_net" == "testnet" ]]; then
 	bitcoin-cli -testnet sendmany "" {$pairs} 6 Payments [$items] true 6 CONSERVATIVE
   else
