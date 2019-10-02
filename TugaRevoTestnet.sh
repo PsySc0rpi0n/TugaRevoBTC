@@ -9,11 +9,9 @@ help_menu(){
 main_menu() {
    while true
       do
-         clear # Clear screen for each loop of menu
+         #clear # Clear screen for each loop of menu
          echo "============="
-         echo "\$#: $#"
-         echo "\$1: $1"
-         if [[ "$1" -eq "-testnet" ]]; then
+         if [[ $1 == "-testnet" ]]; then
            echo "Menu --- Testnet"
          else
            echo "Menu --- Mainnet"
