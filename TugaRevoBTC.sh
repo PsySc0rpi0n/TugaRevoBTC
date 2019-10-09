@@ -92,7 +92,7 @@ confirm_input(){
    if [[ $input != "YES" ]]; then
       echo Action cancelled. "$input_type" not confirmed!
    fi
-   echo 1
+   return 1
 }
 
 send_many(){
@@ -117,7 +117,7 @@ send_single_payment(){
    read -r -p '> ' address
    input_type="address"
    ret = $(confirm_input $input_type $address)
-   if "$?" == 0; then
+   if "$ret" == 0; then
       echo "How much BTC to send:"
       read -r -p '> ' amount
       input_type="amount"
