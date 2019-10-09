@@ -12,6 +12,7 @@ main_menu() {
          #clear # Clear screen for each loop of menu
          echo "============="
          if [[ $1 == "-testnet" || $1 == "-t" ]]; then
+           used_net="testnet"
            echo "Menu --- Testnet"
          else
            echo "Menu --- Mainnet"
@@ -60,7 +61,7 @@ send_single_BTC(){
 check_balance(){
    echo Checking Full Node data...
    echo Current wallet has:
-   bitcoin-cli -testnet getbalance
+   [[ $used_net == "testnet" ]] && bitcoin-cli -testnet getbalance || bitcoin-cli getbalance
 }
 
 confirm_input(){
