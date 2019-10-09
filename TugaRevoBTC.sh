@@ -87,12 +87,11 @@ load_addr_data(){
 
 # ------ Internal Messages System ------ #
 confirm_input(){
-   echo Please confirm "$1" "$2". Type YES to confirm:
    read -r -p'> ' input
    if [[ $input != "YES" ]]; then
-      echo Action cancelled. "$input_type" not confirmed!
+      return 1
    fi
-   return 1
+   return 0
 }
 
 send_many(){
@@ -116,8 +115,9 @@ send_single_payment(){
    echo "Which address to send:"
    read -r -p '> ' address
    input_type="address"
-   ret = $(confirm_input $input_type $address)
-   if "$ret" == 0; then
+   echo "Please confirm  address: "$address". Type YES to confirm (case sensitive)":
+   ret=$(confirm_input)
+   if [[ ! $ret ]]; then
       echo "How much BTC to send:"
       read -r -p '> ' amount
       input_type="amount"
@@ -133,6 +133,7 @@ send_single_payment(){
          return 1
       fi
    else
+      echo Action cancelled. address $address not confirmed!
       return 1
    fi
    echo "Transaction complete"
