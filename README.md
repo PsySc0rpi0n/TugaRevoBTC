@@ -1,30 +1,38 @@
-Project Title
+TugaRevoBTC
 
 TugaRevoBTC is a simple script to perform automatic payments of BTC to a single address or a group of addresses.
-It can be hany when running projects of Cloud Minning where you need to send payments to your clients.
+It can be handy when running projects of Cloud Minning where you need to send payments to your clients.
 
 Getting Started
-Download the script from Github as usual
+- Download the script from Github as usual
 
 Prerequisites
-bitcoin core binaries. Download them from your distro repositories
-bash. This was (and still is) developed using bash interpreter.
+- bitcoin core binaries. Download them from your distro repositories. This script uses only commands of bitcoin core when it comes to process payments.
+- bash. This was (and still is) developed using bash interpreter.
 
 Give examples
-At this initial stage, a user interface is available so that the user can see what he can do with the script. Later, this interface will be removed
-and the script will run automatically in crontab.
+- Two versions are available. An automated script where minimal user intervention is required and another version based in menus
+that can be chosen by the user.
+- Automated version can run in testnet or mainnet. It only requires two switches and one parameter when launched (only multi addresses payments are available):
+   - Automated version examples:
+      - ./autotugarevobtc.sh -t -a file_path.dat
+      - ./autotugarevobtc.sh -m -a file_path.dat
+      where [-m|--mainnet]  and [-t|--mainnet] allow mainnet or testnet networks and [-a|--address] is to specify the file where addresses are stored (to process multi address payments)
+
+   - Manual version
+      - ./TugaRevoBTC -t
+      - ./TugaRevoBTC -m
+      Same as automated version but here the addresses file is not given when script is launched because this version allows for single address payment to be issued. If you need multi address
+      payment, the menu will ask you for the addresses file.
 
 Built With
 VIM - Vi IMproved 8.0 (2016 Sep 12, compiled Jun 21 2019 04:10:35)
-Included patches: 1-197, 322, 377-378, 550, 649, 651, 703, 706-707
-Extra patches: 8.1.1401, 8.1.1382, 8.1.1368, 8.1.1367, 8.1.1366, 8.1.1365, 8.1.1046, 8.1.0613, 8.1.0547, 8.1.0546, 8.1.0544, 8.1.0540, 8.1.0539,
-8.1.0538, 8.1.0506, 8.1.0208, 8.1.0206, 8.1.0205, 8.1.0189, 8.1.0177, 8.1.0067, 8.1.0066
 
 Versioning
 No fancy versioning system. Just used v.01
 
 Authors
-PsySc0rpi0n - José Carlos Ferreira
+PsySc0rpi0n - JCOFerreira
 
 License
 This project is licensed under the GNU GENERAL PUBLIC LICENSE - see the LICENSE.md file for details

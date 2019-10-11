@@ -104,39 +104,39 @@ send_many(){
    else
       bitcoin-cli sendmany "" {pairs} 6 Payments [$items] true 6 CONSERVATIVE
    fi
-   echo "TxID: $1"
+   echo "Transaction complete"
+   echo "TxID: $?"
 }
 
 # ------ Send BTC Paymento to a single Address ------ #
 send_single_payment(){
-   local input_type
    local amount
    local ret
    echo "Which address to send:"
    read -r -p '> ' address
-   input_type="address"
-   echo "Please confirm  address: "$address". Type YES to confirm (case sensitive)":
-   ret=$(confirm_input)
-   if [[ ! $ret ]]; then
+   echo "Please confirm address: "$address". Type YES to confirm (case sensitive):"
+   confirm_input
+   if [[ $? == 0 ]]; then
       echo "How much BTC to send:"
       read -r -p '> ' amount
-      input_type="amount"
-      confirm_input "$input_type" "$amount"
-      if ! $?; then
+      echo "Please confirm amount to send: $amount BTC. Type YES to confirm (case sensitive):"
+      confirm_input
+      if [[ $? == 0 ]]; then
          echo Sending "$amount" "BTC" to "$address"
          if [[ $used_net == "testnet" ]]; then
             bitcoin-cli -testnet sendtoaddress "$address" "$amount" false
          else
             bitcoin-cli sendtoaddress "$address" "$amount" false
          fi
+         echo "Transaction complete"
       else
+         echo Action cancelled. Amount $amount BTC not confirmed!
          return 1
       fi
    else
-      echo Action cancelled. address $address not confirmed!
+      echo Action cancelled. Address $address not confirmed!
       return 1
    fi
-   echo "Transaction complete"
 }
 
 # ------ Check loaded wallet balance ------ #
