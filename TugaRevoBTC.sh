@@ -100,12 +100,12 @@ send_many(){
    mk_json_object_one_val "$btc_amount_dec" "${addr_arr[@]}"
    mk_json_lst_one_val "${addr_arr[@]}"
    if [[ $used_net == "testnet" ]]; then
-      bitcoin-cli -testnet sendmany "" {$pairs} 6 Payments [$items] true 6 CONSERVATIVE
+      output=$(bitcoin-cli -testnet sendmany "" {$pairs} 6 Payments [$items] true 6 CONSERVATIVE)
    else
-      bitcoin-cli sendmany "" {pairs} 6 Payments [$items] true 6 CONSERVATIVE
+      output=$(bitcoin-cli sendmany "" {pairs} 6 Payments [$items] true 6 CONSERVATIVE)
    fi
    echo "Transaction complete"
-   echo "TxID: $?"
+   echo "TxID: $output"
 }
 
 # ------ Send BTC Paymento to a single Address ------ #
@@ -129,6 +129,7 @@ send_single_payment(){
             bitcoin-cli sendtoaddress "$address" "$amount" false
          fi
          echo "Transaction complete"
+         return 0
       else
          echo Action cancelled. Amount $amount BTC not confirmed!
          return 1
@@ -147,7 +148,7 @@ check_balance(){
    if [[ $used_net == "testnet" ]]; then
       bitcoin-cli -testnet getbalance
    else
-   bitcoin-cli getbalance
+      bitcoin-cli getbalance
    fi
 }
 
@@ -196,6 +197,29 @@ mk_json_lst_one_val(){
      args+="$lst "
    done
    mk_json_lst $args
+}
+
+# ====== Check TxID details ====== #
+check_txid(){
+   local txid
+   local txidlen=64
+   local strlen
+   echo "Enter transaction ID:"
+   read -p '> ' txid
+   echo "\$TxID is: $txid"
+   strlen=$($(echo -n "txid" | wc -c))
+   echo "strlen is $strlen"
+   while [[ -z $txid || $strlen -ne $txidlen ]]
+   do
+      echo "TxID not valid. Please enter a valid one: "
+      read -p '> ' txid
+      strlen=$(echo -n "txid" | wc -c)
+   done
+   if [[ $used_net == "testnet" ]]; then
+      bitcoin-cli -testnet gettransaction $txid
+   else
+      bitcoin-cli gettransaction $txid
+   fi
 }
 
 # ====== Main script starts here ======
