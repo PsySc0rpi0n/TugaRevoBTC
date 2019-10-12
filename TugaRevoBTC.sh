@@ -206,19 +206,17 @@ check_txid(){
    local strlen
    echo "Enter transaction ID:"
    read -p '> ' txid
-   echo "\$TxID is: $txid"
-   strlen=$($(echo -n "txid" | wc -c))
-   echo "strlen is $strlen"
+   strlen=${#txid}
    while [[ -z $txid || $strlen -ne $txidlen ]]
    do
       echo "TxID not valid. Please enter a valid one: "
       read -p '> ' txid
-      strlen=$(echo -n "txid" | wc -c)
+      strlen=${#txid}
    done
    if [[ $used_net == "testnet" ]]; then
       bitcoin-cli -testnet gettransaction $txid
    else
-      bitcoin-cli gettransaction $txid
+      bitcoin-cli gettransaction "$txid"
    fi
 }
 
