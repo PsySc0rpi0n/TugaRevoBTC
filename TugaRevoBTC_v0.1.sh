@@ -146,9 +146,9 @@ check_balance(){
    echo Checking Full Node data...
    echo Current wallet has:
    if [[ $used_net == "testnet" ]]; then
-      bitcoin-cli -testnet getbalance
+      bitcoin-cli -testnet getbalance "*" 1 true
    else
-      bitcoin-cli getbalance
+      bitcoin-cli getbalance "*" 1 true
    fi
 }
 
@@ -209,9 +209,13 @@ check_txid(){
    strlen=${#txid}
    while [[ -z $txid || $strlen -ne $txidlen ]]
    do
-      echo "TxID not valid. Please enter a valid one: "
+      echo "TxID not valid. Please enter a valid one or <Enter> to cancel: "
       read -p '> ' txid
       strlen=${#txid}
+      if [[ -z $txid ]]; then
+         echo "Cancelled"
+         return 1
+      fi
    done
    if [[ $used_net == "testnet" ]]; then
       bitcoin-cli -testnet gettransaction $txid
