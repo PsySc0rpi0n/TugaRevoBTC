@@ -17,7 +17,7 @@ process_args(){
       -m|--mainnet)   used_net="mainnet"
         			  ;;
       -a|--addr-file) if [[ ! -f $2 ]]; then
-					    echo "File "$2" not found!"
+					    #echo "File "$2" not found!"
 					  else
 						file_path="$2"
 					  fi
@@ -38,7 +38,7 @@ load_addr_data(){
   declare -ag addr_arr
   num_addr=$(wc -l < "$file_path")
   readarray -t addr_arr < "$file_path"
-  echo -e "$num_addr addresses sucessefuly loaded.\n"
+  #echo -e "$num_addr addresses sucessefuly loaded.\n"
 }
 
 mk_json_obj(){
@@ -68,7 +68,7 @@ eval_send_amount(){
   btc_sats=$(echo "$btc_dec * 1*10^8" | bc)
   btc_sats_amount=$(echo "$btc_sats / $num_addr" | bc)
   btc_amount_dec=$(printf "%.8f" $(echo "scale=8; $btc_sats_amount / (1*10^8)" | bc -l))
-  echo "$btc_amount_dec"
+  #echo "$btc_amount_dec"
 }
 
 mk_json_object_one_val(){
