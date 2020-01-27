@@ -17,7 +17,7 @@ that can be chosen by the user.
    - Automated version examples:
       - ./autotugarevobtc.sh -t -a file_path.dat
       - ./autotugarevobtc.sh -m -a file_path.dat
-      where [-m|--mainnet]  and [-t|--mainnet] allow mainnet or testnet networks and [-a|--address] is to specify the file where addresses are stored (to process multi address payments)
+      where [-m|--mainnet]  and [-t|--testnet] allow mainnet or testnet networks and [-a|--address] is to specify the file where addresses are stored (to process multi address payments)
 
    - Manual version
       - ./TugaRevoBTC -t
