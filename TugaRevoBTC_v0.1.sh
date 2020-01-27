@@ -46,7 +46,7 @@ main_menu(){
    echo "[1] - Send Single Payment"
    echo "[2] - Send Multiple Payments"
    echo "[3] - Check Balance"
-   echo "[4] - Check TxID etails"
+   echo "[4] - Check TxID Details"
    echo "[0] - Quit"
 }
 
