@@ -17,15 +17,15 @@ process_args(){
       -m|--mainnet)   used_net="mainnet"
         			  ;;
       -a|--addr-file) if [[ ! -f $2 ]]; then
-					    #echo "File "$2" not found!"
-					  else
-						file_path="$2"
-					  fi
-        			  shift
+			#echo "File "$2" not found!"
+		      else
+			file_path="$2"
+		      fi
+        		shift
         			  ;;
       -h|--help)      show_usage_help
         			  ;;
-      *) echo "Unknown option: $1"
+      *) 	      echo "Unknown option: $1"
         			  ;;
     esac
     shift
